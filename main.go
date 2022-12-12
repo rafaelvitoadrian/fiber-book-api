@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/template/html"
 	"github.com/rafaelvitoadrian/fiber-book-api/controllers/bookcontroller"
 	"github.com/rafaelvitoadrian/fiber-book-api/models"
 )
@@ -9,8 +10,14 @@ import (
 func main() {
 	models.ConnectDatabase()
 
-	app := fiber.New()
+	engine := html.New("./", ".html")
+	app := fiber.New(fiber.Config{Views: engine})
+	app.Post("/upload", bookcontroller.UploadImage)
+
 	api := app.Group("/api")
+	upload := api.Group("/upload")
+	upload.Get("/", bookcontroller.UploadPhoto)
+
 	book := api.Group("/book")
 
 	book.Get("/", bookcontroller.Index)
